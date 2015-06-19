@@ -1,0 +1,14 @@
+{
+  "name": "tools.pinf.CloudCommands",
+  "version": "0.1.0",
+  "main": "plugin.js",
+  "config": {
+    "org.pinf.genesis.lib/0": {
+      "api": {
+        "consumes": {
+          "config": "org.pinf.genesis.lib/0/config"
+        }
+      }
+    }
+  }
+}
