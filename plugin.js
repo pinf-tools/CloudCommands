@@ -8,8 +8,10 @@ exports.for = function (API) {
 
 		return resolver({}).then(function (resolvedConfig) {
 
-			// TODO: Index commands here and only register them below.
-			//       That way we can track registred commands by this component
+			// NOTE: Commands are declared in the config files.
+
+			// TODO: Record registered commands in resolvedConfig.
+			//       That way we can track registred commands by all components easily
 			//       in program.rt.json.
 
 			return resolvedConfig;
@@ -18,16 +20,15 @@ exports.for = function (API) {
 
 	exports.spin = function (resolvedConfig) {
 
+		if (resolvedConfig['$tools.pinf.CloudCommands/commands/0']) {
 
-//console.log("resolvedConfig in CLOUD COMMANDS", resolvedConfig);
+			var commands = resolvedConfig['$tools.pinf.CloudCommands/commands/0'].getAll();
 
-		if (
-			resolvedConfig['$tools.pinf.CloudCommands/commands/0'] &&
-			resolvedConfig['$tools.pinf.CloudCommands/commands/0'].register === true
-		) {
-
-//console.log("ALL", resolvedConfig['$tools.pinf.CloudCommands/commands/0'].getAll());
-
+			var aliases = Object.keys(commands);
+			aliases.sort();
+			aliases.forEach(function (alias) {
+				API.registerCommand(alias, commands[alias]);
+			});
 		}
 
 	}

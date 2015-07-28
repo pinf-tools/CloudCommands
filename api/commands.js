@@ -1,41 +1,50 @@
 
-
 require('org.pinf.genesis.lib/lib/api').forModule(require, module, function (API, exports) {
 
+	var SINGLETONS = null;
+	if (!API.SINGLETONS["tools.pinf.CloudCommands/commands/0"]) {
+		API.SINGLETONS["tools.pinf.CloudCommands/commands/0"] = {};
+	}
+	SINGLETONS = API.SINGLETONS["tools.pinf.CloudCommands/commands/0"];
 
 	var Commands = function () {
-		this.$PLComponent = "tools.pinf.CloudCommands/commands/0";
-	}
-/*
-		if (resolvedConfig.commands) {
-			Object.keys(resolvedConfig.commands).forEach(function (commandAlias) {
-				Object.keys(resolvedConfig.commands[commandAlias]["@impl"]).forEach(function (impl) {
-					API.registerCommand(
-						commandAlias,
-						resolvedConfig.commands[commandAlias]["@impl"][impl]
-					);
-				});
+		var self = this;
+
+		self.$PLComponent = "tools.pinf.CloudCommands/commands/0";
+
+		var registeredCommands = {};
+
+		self.registerCommands = function (commands) {
+			Object.keys(commands).forEach(function (commandId) {
+				if (
+					commands[commandId]['@impl'] &&
+					commands[commandId]['@impl']['$tools.pinf.CloudCommands/command/0']
+				) {
+					registeredCommands[commandId] = commands[commandId]['@impl']['$tools.pinf.CloudCommands/command/0'];
+				}
 			});
 		}
-*/
 
-	Commands.prototype.getAll = function () {
-
-//console.log("HGET ALL", this);
-
+		self.getAll = function () {
+			return registeredCommands;
+		}
 	}
-
 
 	exports.PLComponent = function (config, groupConfig) {
 
-//console.log("Commands config", JSON.stringify(config, null, 4));
+		if (!SINGLETONS.commands) {
+			SINGLETONS.commands = new Commands();
+		}
 
-//console.log("GET LABEL", config.commands["root.space.invite"]["@impl"]["$space.pinf.genesis/origin.get-invite-token/0"].getLabel());
+		if (config.commands) {
+			SINGLETONS.commands.registerCommands(config.commands);
+		}
 
-		return {
-			"$tools.pinf.CloudCommands/commands/0": API.EXTEND(true, new Commands(), config)
+		var api = {
+			"$tools.pinf.CloudCommands/commands/0": SINGLETONS.commands
 		};
+
+		return api;
 	}
 
 });
-
